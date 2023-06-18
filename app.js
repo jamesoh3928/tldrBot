@@ -42,6 +42,24 @@ app.post("/slack/events", (req, res) => {
     return;
   }
 
+  console.log("body " + req.body);
+  console.log("body stringify" + JSON.stringify(req.body));
+  const { text } = request.body;
+  console.log("text " + text);
+  // Split text with space
+  const textArray = text.split(" ");
+  if (textArray.length !== 2) {
+    console.log("Invalid input");
+    res.send("Invalid input, there should be exactcly two commands, [channel] [timestamp]");
+  }
+  const channel = textArray[0];
+  const timestamp = textArray[1];
+  console.log("channel " + channel);
+  console.log("timestamp " + timestamp);
+  // TODO: get channel id with channel name
+  // TODO: conver timestamp to epoch time
+  // TODO: get conversation history with channel id and timestamp
+
   // Handle other event types
   console.log("Start summarizing...");
   (async () => {
