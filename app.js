@@ -45,22 +45,21 @@ app.post("/slack/events", (req, res) => {
   // Example req.body looks like this
   // { "token": "-", "team_id": "-", "team_domain": "ucberkeleyaihackathon", "channel_id": "C05CUEZJ05C", "channel_name": "mpdm-jo9347--junhee20park--jo8842-1", "user_id": "-", "user_name": "-", "command": "/summary", "text": "timeStamp", "api_app_id": "-", "is_enterprise_install": "false", "response_url": "-", "trigger_id": "-" }
   // Split text with space
-  const { command, text, channel_name } = req.body;
-  const channelName = channel_name;
+  const { command, text, channel_id, response_url } = req.body;
+  const responseUrl = response_url;
+  const channelId = channel_id;
   // Validate the command
   if (command !== "/summary") {
     console.log("Invalid input");
-    res.send("Command not found. Please use /summary <channel_name> <timestamp>");
+    res.send("Command not found. Please use /summary <timestamp>");
   }
-  console.log("text: ", text);
+  console.log("dateTimeString: ", text);
   const dateTimeString = text;
 
   // Handle other event types
   console.log("Start summarizing...");
   (async () => {
-    const result = await summarize.summarizeMain(channelName, dateTimeString);
-    console.log(result);
-    res.send(result);
+    const result = await summarize.summarizeMain(channelId, dateTimeString, res, responseUrl);
   })();
 });
 

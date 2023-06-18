@@ -1,6 +1,7 @@
 import { Configuration, OpenAIApi } from "openai";
 import dotenv from "dotenv";
 import { WebClient } from "@slack/web-api";
+import axios from "axios";
 
 dotenv.config();
 
@@ -110,36 +111,25 @@ const formatInputString = async (conversationHistory) => {
   return inputString;
 };
 
-const summarizeMain = async (channelName, dateTimeString) => {
+const summarizeMain = async (channelId, dateTimeString, res, responseUrl) => {
   // Convert timstamp string to epoch time
   // Input of format of "06/17/2023 16:00:00"
   if (!isTimestampValid(dateTimeString)) {
     console.error("Invalid timestamp format");
-    return { error: "Invalid timestamp format" };
+    res.status(400).json({ error: "Invalid timestamp format" });
   }
   // TODO: currently working because of PST time based, but need to cover all cases
   const dateTime = Math.floor(
     new Date(dateTimeString).getTime() / 1000
   ).toLocaleString();
 
-  console.log("channelName: " + channelName);
+  console.log("channelId: " + channelId);
   console.log("datetime: " + dateTime);
 
   let conversationHistory; // Store conversation history
-
+  // To avoid slack 3 sec timeout
+  res.status(200).json({ text: "Summarizing... Might take few seconds!" });
   try {
-    // Get channel ID
-    const channelsInfoResponse = await client.conversations.list();
-    if (!channelsInfoResponse.ok) {
-      console.error(channelsInfoResponse.error);
-      throw new Error("Failed to fetch channels info");
-    }
-    console.log("Channels info fetched successfully");
-
-    // Extract channel ID with channel name using functional programming
-    const channelId = channelsInfoResponse.channels.find((c) => c.name === channelName).id;
-    console.log("channelId " + channelId);
-
     // Call the conversations.history method using WebClient
     const result = await client.conversations.history({
       channel: channelId,
@@ -157,12 +147,26 @@ const summarizeMain = async (channelName, dateTimeString) => {
 
     // Summarize using gpt API
     const summary = await summarize.summarizeMessages(inputString);
+    let message;
     if (
       summary.data.choices[0].finish_reason == "stop" &&
       summary.data.choices[0].message.role == "assistant"
     ) {
-      return summary.data.choices[0].message.content;
+      message = { text: summary.data.choices[0].message.content };
+    } else {
+      message = { text: "Error in summarizing messages" };
     }
+
+    // Send the POST request to the response URL
+    axios.post(responseUrl, message, {
+      headers: { 'Content-Type': 'application/json' }
+    }).then(() => {
+      // Handle the success response
+      res.status(200).send('Message sent successfully');
+    }).catch(error => {
+      // Handle the error response
+      res.status(500).send('Failed to send message with error: ${error}');
+    });
   } catch (error) {
     console.error(error);
   }
