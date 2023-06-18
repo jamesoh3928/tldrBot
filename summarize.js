@@ -106,6 +106,7 @@ const formatInputString = async (conversationHistory) => {
     }
   }
   inputString += '"';
+  console.log("inputString: " + inputString);
   return inputString;
 };
 
@@ -137,7 +138,7 @@ const summarizeMain = async (channelName, dateTimeString) => {
 
     // Extract channel ID with channel name using functional programming
     const channelId = channelsInfoResponse.channels.find((c) => c.name === channelName).id;
-    console.log(channelId);
+    console.log("channelId " + channelId);
 
     // Call the conversations.history method using WebClient
     const result = await client.conversations.history({
