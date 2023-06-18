@@ -162,11 +162,9 @@ const summarizeMain = async (channelId, dateTimeString, res, responseUrl) => {
     axios.post(responseUrl, message, {
       headers: { 'Content-Type': 'application/json' }
     }).then(() => {
-      // Handle the success response
-      res.status(200).send('Message sent successfully');
+      console.log('Message sent successfully');
     }).catch(error => {
-      // Handle the error response
-      res.status(500).send('Failed to send message with error: ${error}');
+      console.log(`Failed to send message with error: ${error}`);
     });
   } catch (error) {
     console.error(error);
