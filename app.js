@@ -2,9 +2,12 @@ import dotenv from "dotenv";
 import express from "express";
 import summarize from "./summarize.js";
 import { WebClient } from "@slack/web-api";
+import bodyParser from "body-parser";
 
 // Set up server
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 const port = 3000;
 
 dotenv.config();
@@ -89,15 +92,16 @@ app.get("/chat", (req, res) => {
 });
 
 app.post("/slack/events", (req, res) => {
-  const { type, challenge } = req.body;
-
-  if (type === "url_verification") {
+  const type = req.body.type;
+  const challenge = req.body.challenge;
+  if (type && challenge && type === "url_verification") {
     // Respond to the URL verification challenge
     res.status(200).send({ challenge });
-  } else {
-    // TODO
-    // Handle other event types
+    return;
   }
+
+  // TODO
+  // Handle other event types
 });
 
 app.listen(port, () => {
