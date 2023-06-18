@@ -8,6 +8,7 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+// TODO: delete
 const summarizeApi = async (req, res) => {
     if (!configuration.apiKey) {
         res.status(500).json({
@@ -21,7 +22,7 @@ const summarizeApi = async (req, res) => {
     try {
         const chatCompletion = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: generatePrompt(req) }],
+            messages: [{ role: "user", content: generatePromptTest(req) }],
             temperature: 0.2,
         });
 
@@ -42,12 +43,31 @@ const summarizeApi = async (req, res) => {
     }
 };
 
-const generatePrompt = (req) => {
+// TODO: delete
+const generatePromptTest = (req) => {
     // TODO: Generate prompt in the future
     // const { message } = req.query;
 
     return "Give me a motivational quote by Nietzsche.";
 };
+
+const generatePrompt = (messages) => {
+    const description = "Summarize the provided Slack messages in json format to extract crucial information that members shouldn't miss. The summary should enable them to quickly grasp the main points without having to go through the entire conversation. Exclude messages intended for fun or jokes, but make sure to include imporant announcments or incidents. Please format the summary as follows\:\n\n1. One line summary about the topic (keep it concise)\nSummary\: More detailed summary\nContact\: {people involved in the conversation}\n\n2. Same format as above ...\nSlack test\: \'";
+
+    return description + messages + "\'";
+}
+
+const summarizeMessages = async (messages) => {
+    const prompt = generatePrompt(messages);
+
+    // Call gpt-3.5-turbo model to summarize messages
+    const summary = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: generatePromptTest(req) }],
+        temperature: 0.2,
+    });
+    return summary;
+}
 
 const summarize = {
     summarizeApi
