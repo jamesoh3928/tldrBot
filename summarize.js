@@ -136,7 +136,7 @@ const summarizeMain = async (channelName, dateTimeString) => {
     console.log("Channels info fetched successfully");
 
     // Extract channel ID with channel name using functional programming
-    const channelId = channelsInfoResponse.channels.find((c) => c.name === channelName);
+    const channelId = channelsInfoResponse.channels.find((c) => c.name === channelName).id;
     console.log(channelId);
 
     // Call the conversations.history method using WebClient

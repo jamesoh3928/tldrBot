@@ -65,5 +65,5 @@ app.post("/slack/events", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`tldrBot server listening on port ${port}`);
 });
