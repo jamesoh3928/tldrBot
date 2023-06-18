@@ -115,6 +115,18 @@ app.get("/chat", (req, res) => {
   })(res);
 });
 
+app.post('/slack/events', (req, res) => {
+  const { type, challenge } = req.body;
+
+  if (type === 'url_verification') {
+    // Respond to the URL verification challenge
+    res.status(200).send({ challenge });
+  } else {
+    // TODO
+    // Handle other event types
+  }
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
