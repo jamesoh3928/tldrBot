@@ -13,24 +13,6 @@ dotenv.config();
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
-  // Given some known conversation ID ask_director id
-  // const conversationId = "C05BWSD49MG";
-
-  // TEST for sending chat to ask_director channel
-  // (async () => {
-  //   // Post a message to the channel, and await the result.
-  //   // Find more arguments and details of the response: https://api.slack.com/methods/chat.postMessage
-  //   const result = await client.chat.postMessage({
-  //     text: "From the other side of apocalypse",
-  //     channel: conversationId,
-  //   });
-
-  //   // The result contains an identifier for the message, `ts`.
-  //   console.log(
-  //     `Successfully send message ${result.ts} in conversation ${conversationId}`
-  //   );
-  //   console.log(result);
-  // })();
 });
 
 app.post("/slack/events", (req, res) => {
@@ -59,7 +41,12 @@ app.post("/slack/events", (req, res) => {
   // Handle other event types
   console.log("Start summarizing...");
   (async () => {
-    const result = await summarize.summarizeMain(channelId, dateTimeString, res, responseUrl);
+    const result = await summarize.summarizeMain(
+      channelId,
+      dateTimeString,
+      res,
+      responseUrl
+    );
   })();
 });
 
