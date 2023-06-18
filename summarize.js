@@ -58,7 +58,7 @@ const generatePromptTest = (req) => {
 
 const generatePrompt = (messages) => {
   const description =
-    "Summarize the provided Slack messages in given format to extract crucial information that members shouldn't miss. The summary should enable them to quickly grasp the main points without having to go through the entire conversation. Exclude messages intended for fun or jokes, but make sure to include imporant announcments or incidents. You can exclude some of the unimportant messages. Do not include text other than text that match the format. Please format the summary as follows:\n\n1. One line summary about the topic (keep it concise)\nSummary: More detailed summary\nContact: {people involved in the conversation}\n\n2. Same format as above ...\nSlack test:";
+    "Summarize the provided Slack messages in a given format to extract crucial information that members shouldn't miss. The summary should enable them to quickly grasp the main points without having to go through the entire conversation. Exclude messages intended for fun or jokes, but make sure to include important announcements or incidents. You can exclude some of the unimportant messages. Do not include text other than text that matches the format. \n\nInput Format: “””user1: {text}, user2: {text}, … “””\n\nPlease format the summary as follows:\n\n1. One line summary about the topic (keep it concise)\nSummary: More detailed summary\nContact: {people involved in the conversation}\n\n2. Same format as above ...\n\nOutput format: bold the first line summary of each section with number.\n\nInput text:";
 
   return description + messages + "'";
 };
@@ -67,7 +67,7 @@ const isTimestampValid = (timestamp) => {
   // Regular expression pattern for "MM/dd/YYYY HH:mm:ss" format
   const pattern = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/;
   return pattern.test(timestamp);
-}
+};
 
 const summarizeMessages = async (messages) => {
   const prompt = generatePrompt(messages);
@@ -82,7 +82,7 @@ const summarizeMessages = async (messages) => {
 };
 
 const formatInputString = async (conversationHistory) => {
-  let inputString = '"';
+  let inputString = '"""';
 
   // Format input string for each message
   for (let i = 0; i < conversationHistory.length; i++) {
@@ -101,12 +101,12 @@ const formatInputString = async (conversationHistory) => {
       userResult.user.profile.last_name;
 
     // Format input string
-    inputString += userName + ": " + text;
+    inputString += userName + ": {" + text + "}";
     if (i < conversationHistory.length) {
       inputString += ", ";
     }
   }
-  inputString += '"';
+  inputString += '"""';
   console.log("inputString: " + inputString);
   return inputString;
 };
@@ -159,13 +159,16 @@ const summarizeMain = async (channelId, dateTimeString, res, responseUrl) => {
     }
 
     // Send the POST request to the response URL
-    axios.post(responseUrl, message, {
-      headers: { 'Content-Type': 'application/json' }
-    }).then(() => {
-      console.log('Message sent successfully');
-    }).catch(error => {
-      console.log(`Failed to send message with error: ${error}`);
-    });
+    axios
+      .post(responseUrl, message, {
+        headers: { "Content-Type": "application/json" },
+      })
+      .then(() => {
+        console.log("Message sent successfully");
+      })
+      .catch((error) => {
+        console.log(`Failed to send message with error: ${error}`);
+      });
   } catch (error) {
     console.error(error);
   }
