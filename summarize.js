@@ -52,9 +52,6 @@ const summarizeApi = async (req, res) => {
 
 // TODO: delete
 const generatePromptTest = (req) => {
-  // TODO: Generate prompt in the future
-  // const { message } = req.query;
-
   return "Give me a motivational quote by Nietzsche.";
 };
 
@@ -119,6 +116,7 @@ const summarizeMain = async (channelName, dateTimeString) => {
     console.error("Invalid timestamp format");
     return { error: "Invalid timestamp format" };
   }
+  // TODO: currently working because of PST time based, but need to cover all cases
   const dateTime = Math.floor(
     new Date(dateTimeString).getTime() / 1000
   ).toLocaleString();
@@ -140,13 +138,6 @@ const summarizeMain = async (channelName, dateTimeString) => {
     // Extract channel ID with channel name using functional programming
     const channelId = channelsInfo.channels.find((c) => c.name === channelName);
     console.log(channelId);
-
-    // TODO: delete legacy code
-    // Get date
-    // let dateTimeString = "06/17/2023 16:00:00";
-    // const dateTime = Math.floor(
-    //   new Date(dateTimeString).getTime() / 1000
-    // ).toLocaleString();
 
     // Call the conversations.history method using WebClient
     const result = await client.conversations.history({
@@ -185,6 +176,5 @@ const summarize = {
 
 export default summarize;
 
-// TODO: delete
-// Example
+// OpenAi API response example
 // {"id":"chatcmpl-7SfeYlfjwMXOCPs4TciCleIo6mql8","object":"chat.completion","created":1687067654,"model":"gpt-3.5-turbo-0301","usage":{"prompt_tokens":16,"completion_tokens":14,"total_tokens":30},"choices":[{"message":{"role":"assistant","content":"\"That which does not kill us, makes us stronger.\" - Friedrich Nietzsche"},"finish_reason":"stop","index":0}]}

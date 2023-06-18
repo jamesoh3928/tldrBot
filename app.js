@@ -45,7 +45,8 @@ app.post("/slack/events", (req, res) => {
   // Example req.body looks like this
   // { "token": "-", "team_id": "-", "team_domain": "ucberkeleyaihackathon", "channel_id": "C05CUEZJ05C", "channel_name": "mpdm-jo9347--junhee20park--jo8842-1", "user_id": "-", "user_name": "-", "command": "/summary", "text": "timeStamp", "api_app_id": "-", "is_enterprise_install": "false", "response_url": "-", "trigger_id": "-" }
   // Split text with space
-  const { command, text, channelName } = req.body;
+  const { command, text, channel_name } = req.body;
+  const channelName = channel_name;
   // Validate the command
   if (command !== "/summary") {
     console.log("Invalid input");
