@@ -1,12 +1,14 @@
-// Load environment variables
-require("dotenv").config();
+import dotenv from 'dotenv';
+import express from 'express';
+import summarize from './summarize.js';
+import { WebClient } from "@slack/web-api";
 
 // Set up server
-const express = require("express");
 const app = express();
 const port = 3000;
 
-const { WebClient } = require("@slack/web-api");
+dotenv.config();
+
 // Read a token from the environment variables
 const token = process.env.TURBOSUM_SLACK_TOKEN;
 // Initialize
@@ -57,7 +59,6 @@ app.get("/summary", (req, res) => {
         channel: channelId,
         oldest: dateTime,
       });
-      console.log("Retrieved conversation history");
 
       conversationHistory = result.messages;
 
@@ -76,6 +77,15 @@ app.get("/summary", (req, res) => {
       console.error(error);
     }
   })();
+});
+
+app.get("/chat", (req, res) => {
+  console.log("Retrieving conversation history...");
+
+  (async (res) => {
+    // Call summarizeApi which calls OpenAI API
+    await summarize.summarizeApi(req, res);
+  })(res);
 });
 
 app.listen(port, () => {
