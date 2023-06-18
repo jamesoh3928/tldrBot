@@ -78,12 +78,14 @@ app.get("/summary", (req, res) => {
         let text = conversationHistory[i].text;
 
         // Get user name
-        const result = await client.users.info({
+        const userResult = await client.users.info({
           user: userId,
         });
 
         let userName =
-          result.user.profile.first_name + " " + result.user.profile.last_name;
+          userResult.user.profile.first_name +
+          " " +
+          userResult.user.profile.last_name;
 
         inputString += userName + ": " + text;
         if (i < conversationHistory.length) {
@@ -94,6 +96,10 @@ app.get("/summary", (req, res) => {
 
       // Send result
       res.send(inputString);
+
+      // GPT call
+      const gptResult = await summarize.summarizeMessages(inputString);
+      console.log(gptResult);
     } catch (error) {
       console.error(error);
     }
