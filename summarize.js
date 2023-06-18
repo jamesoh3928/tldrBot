@@ -117,6 +117,7 @@ const summarizeMain = async (channelId, dateTimeString, res, responseUrl) => {
   if (!isTimestampValid(dateTimeString)) {
     console.error("Invalid timestamp format");
     res.status(400).json({ error: "Invalid timestamp format" });
+    return;
   }
   // TODO: currently working because of PST time based, but need to cover all cases
   const dateTime = Math.floor(
