@@ -34,7 +34,9 @@ app.get("/", (req, res) => {
 });
 
 app.post("/slack/events", (req, res) => {
-  const { type, challenge } = req.body;
+  const type = req.body.type;
+  const challenge = req.body.challenge;
+
   if (type && challenge && type === "url_verification") {
     // Respond to the URL verification challenge
     res.status(200).send({ challenge });
