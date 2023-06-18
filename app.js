@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
 import summarize from "./summarize.js";
-import { WebClient } from "@slack/web-api";
 import bodyParser from "body-parser";
 
 // Set up server
@@ -11,11 +10,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const port = 3000;
 
 dotenv.config();
-
-// Read a token from the environment variables
-const token = process.env.TURBOSUM_SLACK_TOKEN;
-// Initialize
-const client = new WebClient(token);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -39,61 +33,10 @@ app.get("/", (req, res) => {
   // })();
 });
 
-app.get("/summary", (req, res) => {
-  console.log("Start summarizing...");
-  (async () => {
-    let conversationHistory; // Store conversation history
-    let channelId = "C05C9FUH8M7"; // ID of channel you watch to fetch the history for random
-
-    try {
-      // Get date
-      let dateTimeString = "06/17/2023 16:00:00";
-      const dateTime = Math.floor(
-        new Date(dateTimeString).getTime() / 1000
-      ).toLocaleString();
-
-      // Call the conversations.history method using WebClient
-      const result = await client.conversations.history({
-        channel: channelId,
-        oldest: dateTime,
-      });
-      conversationHistory = result.messages;
-
-      // Sort by timestamp
-      conversationHistory.sort(
-        (prev, next) => parseFloat(prev.ts) - parseFloat(next.ts)
-      );
-
-      // Get input string
-      const inputString = await summarize.formatInputString(
-        conversationHistory,
-        client
-      );
-
-      // Summarize using gpt API
-      const summary = await summarize.summarizeMessages(inputString);
-      if (summary.data.choices[0].finish_reason == "stop") {
-        res.send(summary.data.choices[0].message.content);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  })();
-  console.log("Finish summarizing...");
-});
-
-app.get("/chat", (req, res) => {
-  console.log("Retrieving conversation history...");
-
-  (async (res) => {
-    // Call summarizeApi which calls OpenAI API
-    await summarize.summarizeApi(req, res);
-  })(res);
-});
-
 app.post("/slack/events", (req, res) => {
   const type = req.body.type;
   const challenge = req.body.challenge;
+
   if (type && challenge && type === "url_verification") {
     // Respond to the URL verification challenge
     res.status(200).send({ challenge });
@@ -102,6 +45,12 @@ app.post("/slack/events", (req, res) => {
 
   // TODO
   // Handle other event types
+  console.log("Start summarizing...");
+  (async () => {
+    const result = await summarize.summarizeMain();
+    console.log(result);
+    res.send(result);
+  })();
 });
 
 app.listen(port, () => {

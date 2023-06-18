@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 import dotenv from "dotenv";
+import { WebClient } from "@slack/web-api";
 
 dotenv.config();
 
@@ -7,6 +8,11 @@ const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
+
+// Read a token from the environment variables
+const token = process.env.TURBOSUM_SLACK_TOKEN;
+// Initialize
+const client = new WebClient(token);
 
 // TODO: delete
 const summarizeApi = async (req, res) => {
@@ -71,7 +77,7 @@ const summarizeMessages = async (messages) => {
   return summary;
 };
 
-const formatInputString = async (conversationHistory, client) => {
+const formatInputString = async (conversationHistory) => {
   let inputString = '"';
 
   // Format input string for each message
@@ -100,10 +106,50 @@ const formatInputString = async (conversationHistory, client) => {
   return inputString;
 };
 
+const summarizeMain = async () => {
+  let conversationHistory; // Store conversation history
+  let channelId = "C05C9FUH8M7"; // ID of channel you watch to fetch the history for random
+
+  try {
+    // Get date
+    let dateTimeString = "06/17/2023 16:00:00";
+    const dateTime = Math.floor(
+      new Date(dateTimeString).getTime() / 1000
+    ).toLocaleString();
+
+    // Call the conversations.history method using WebClient
+    const result = await client.conversations.history({
+      channel: channelId,
+      oldest: dateTime,
+    });
+    conversationHistory = result.messages;
+
+    // Sort by timestamp
+    conversationHistory.sort(
+      (prev, next) => parseFloat(prev.ts) - parseFloat(next.ts)
+    );
+
+    // Get input string
+    const inputString = await summarize.formatInputString(conversationHistory);
+
+    // Summarize using gpt API
+    const summary = await summarize.summarizeMessages(inputString);
+    if (
+      summary.data.choices[0].finish_reason == "stop" &&
+      summary.data.choices[0].message.role == "assistant"
+    ) {
+      return summary.data.choices[0].message.content;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const summarize = {
   summarizeApi,
   summarizeMessages,
   formatInputString,
+  summarizeMain,
 };
 
 export default summarize;
