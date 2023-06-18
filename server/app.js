@@ -15,7 +15,7 @@ const client = new WebClient(token);
 app.get("/", (req, res) => {
   res.send("Hello World!");
   // Given some known conversation ID ask_director id
-  const conversationId = "C05BWSD49MG";
+  // const conversationId = "C05BWSD49MG";
 
   // TEST for sending chat to ask_director channel
   // (async () => {
@@ -37,15 +37,15 @@ app.get("/", (req, res) => {
 app.get("/summary", (req, res) => {
   console.log("Retrieving conversation history...");
 
-  (async (res) => {
+  // Retrieve conversation history
+  (async () => {
     // Store conversation history
     let conversationHistory;
+
     // ID of channel you watch to fetch the history for random
     let channelId = "C05C9FUH8M7";
 
     try {
-      console.log("In try");
-
       // Get date
       dateTimeString = "06/17/2023 16:00:00";
       const dateTime = Math.floor(
@@ -57,9 +57,13 @@ app.get("/summary", (req, res) => {
         channel: channelId,
         oldest: dateTime,
       });
-      console.log("retrieved result");
+      console.log("Retrieved conversation history");
 
       conversationHistory = result.messages;
+
+      conversationHistory.sort(
+        (prev, next) => parseFloat(prev.ts) - parseFloat(next.ts)
+      );
 
       // Print results
       console.log(
@@ -71,7 +75,7 @@ app.get("/summary", (req, res) => {
     } catch (error) {
       console.error(error);
     }
-  })(res);
+  })();
 });
 
 app.listen(port, () => {
