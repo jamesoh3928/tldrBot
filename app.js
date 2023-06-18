@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 dotenv.config();
 
@@ -34,16 +34,14 @@ app.get("/", (req, res) => {
 });
 
 app.post("/slack/events", (req, res) => {
-  const type = req.body.type;
-  const challenge = req.body.challenge;
-
+  // Slack bot url verification
+  const { type, challenge } = req.body;
   if (type && challenge && type === "url_verification") {
     // Respond to the URL verification challenge
     res.status(200).send({ challenge });
     return;
   }
 
-  // TODO
   // Handle other event types
   console.log("Start summarizing...");
   (async () => {
