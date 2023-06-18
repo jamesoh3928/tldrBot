@@ -65,6 +65,12 @@ const generatePrompt = (messages) => {
   return description + messages + "'";
 };
 
+const isTimestampValid = (timestamp) => {
+  // Regular expression pattern for "MM/dd/YYYY HH:mm:ss" format
+  const pattern = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/;
+  return pattern.test(timestamp);
+}
+
 const summarizeMessages = async (messages) => {
   const prompt = generatePrompt(messages);
 
@@ -106,7 +112,20 @@ const formatInputString = async (conversationHistory) => {
   return inputString;
 };
 
-const summarizeMain = async (channelName, dateTime) => {
+const summarizeMain = async (channelName, dateTimeString) => {
+  // Convert timstamp string to epoch time
+  // Input of format of "06/17/2023 16:00:00"
+  if (!isTimestampValid(dateTimeString)) {
+    console.error("Invalid timestamp format");
+    return { error: "Invalid timestamp format" };
+  }
+  const dateTime = Math.floor(
+    new Date(dateTimeString).getTime() / 1000
+  ).toLocaleString();
+
+  console.log("channelName: " + channelName);
+  console.log("datetime: " + dateTime);
+
   let conversationHistory; // Store conversation history
 
   try {
@@ -117,7 +136,7 @@ const summarizeMain = async (channelName, dateTime) => {
       throw new Error("Failed to fetch channels info");
     }
     console.log("Channels info fetched successfully");
-    
+
     // Extract channel ID with channel name using functional programming
     const channelId = channelsInfo.channels.find((c) => c.name === channelName);
     console.log(channelId);

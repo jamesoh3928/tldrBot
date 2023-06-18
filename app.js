@@ -51,21 +51,13 @@ app.post("/slack/events", (req, res) => {
     console.log("Invalid input");
     res.send("Command not found. Please use /summary <channel_name> <timestamp>");
   }
-  
-  // Convert timstamp string to epoch time
-  // Input of format of "06/17/2023 16:00:00"
-  const dateTimeString = text.split(" ");
-  const dateTime = Math.floor(
-    new Date(dateTimeString).getTime() / 1000
-  ).toLocaleString();
-
-  console.log("channelName: " + channelName);
-  console.log("datetime: " + dateTime);
+  console.log("text: ", text);
+  const dateTimeString = text;
 
   // Handle other event types
   console.log("Start summarizing...");
   (async () => {
-    const result = await summarize.summarizeMain();
+    const result = await summarize.summarizeMain(channelName, dateTimeString);
     console.log(result);
     res.send(result);
   })();
