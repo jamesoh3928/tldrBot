@@ -71,9 +71,39 @@ const summarizeMessages = async (messages) => {
   return summary;
 };
 
+const formatInputString = async (conversationHistory, client) => {
+  let inputString = '"';
+
+  // Format input string for each message
+  for (let i = 0; i < conversationHistory.length; i++) {
+    let userId = conversationHistory[i].user;
+    let text = conversationHistory[i].text;
+
+    // Get user name
+    const userResult = await client.users.info({
+      user: userId,
+    });
+
+    // Add first and last name
+    let userName =
+      userResult.user.profile.first_name +
+      " " +
+      userResult.user.profile.last_name;
+
+    // Format input string
+    inputString += userName + ": " + text;
+    if (i < conversationHistory.length) {
+      inputString += ", ";
+    }
+  }
+  inputString += '"';
+  return inputString;
+};
+
 const summarize = {
   summarizeApi,
   summarizeMessages,
+  formatInputString,
 };
 
 export default summarize;

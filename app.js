@@ -37,14 +37,10 @@ app.get("/", (req, res) => {
 });
 
 app.get("/summary", (req, res) => {
-  console.log("Retrieving conversation history...");
-
-  // Retrieve conversation history
+  console.log("Start summarizing...");
   (async () => {
-    // Store conversation history
-    let conversationHistory;
-    // ID of channel you watch to fetch the history for random
-    let channelId = "C05C9FUH8M7";
+    let conversationHistory; // Store conversation history
+    let channelId = "C05C9FUH8M7"; // ID of channel you watch to fetch the history for random
 
     try {
       // Get date
@@ -65,41 +61,14 @@ app.get("/summary", (req, res) => {
         (prev, next) => parseFloat(prev.ts) - parseFloat(next.ts)
       );
 
-      // Print results
-      console.log(
-        conversationHistory.length + " messages found in " + channelId
+      // Get input string
+      const inputString = await summarize.formatInputString(
+        conversationHistory,
+        client
       );
-
-      // let inputArray = [];
-      let inputString = '"';
-
-      // Format input string for each message
-      for (let i = 0; i < conversationHistory.length; i++) {
-        let userId = conversationHistory[i].user;
-        let text = conversationHistory[i].text;
-
-        // Get user name
-        const userResult = await client.users.info({
-          user: userId,
-        });
-
-        // Add first and last name
-        let userName =
-          userResult.user.profile.first_name +
-          " " +
-          userResult.user.profile.last_name;
-
-        // Format input string
-        inputString += userName + ": " + text;
-        if (i < conversationHistory.length) {
-          inputString += ", ";
-        }
-      }
-      inputString += '"';
 
       // Summarize using gpt API
       const summary = await summarize.summarizeMessages(inputString);
-      console.log(summary.data.choices[0]);
       if (summary.data.choices[0].finish_reason == "stop") {
         res.send(summary.data.choices[0].message.content);
       }
@@ -107,6 +76,7 @@ app.get("/summary", (req, res) => {
       console.error(error);
     }
   })();
+  console.log("Finish summarizing...");
 });
 
 app.get("/chat", (req, res) => {
