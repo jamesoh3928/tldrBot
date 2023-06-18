@@ -43,7 +43,6 @@ app.get("/summary", (req, res) => {
   (async () => {
     // Store conversation history
     let conversationHistory;
-
     // ID of channel you watch to fetch the history for random
     let channelId = "C05C9FUH8M7";
 
@@ -61,6 +60,7 @@ app.get("/summary", (req, res) => {
       });
       conversationHistory = result.messages;
 
+      // Sort by timestamp
       conversationHistory.sort(
         (prev, next) => parseFloat(prev.ts) - parseFloat(next.ts)
       );
@@ -73,6 +73,7 @@ app.get("/summary", (req, res) => {
       // let inputArray = [];
       let inputString = '"';
 
+      // Format input string for each message
       for (let i = 0; i < conversationHistory.length; i++) {
         let userId = conversationHistory[i].user;
         let text = conversationHistory[i].text;
@@ -82,11 +83,13 @@ app.get("/summary", (req, res) => {
           user: userId,
         });
 
+        // Add first and last name
         let userName =
           userResult.user.profile.first_name +
           " " +
           userResult.user.profile.last_name;
 
+        // Format input string
         inputString += userName + ": " + text;
         if (i < conversationHistory.length) {
           inputString += ", ";
@@ -94,12 +97,12 @@ app.get("/summary", (req, res) => {
       }
       inputString += '"';
 
-      // Send result
-      res.send(inputString);
-
-      // GPT call
-      const gptResult = await summarize.summarizeMessages(inputString);
-      console.log(gptResult);
+      // Summarize using gpt API
+      const summary = await summarize.summarizeMessages(inputString);
+      console.log(summary.data.choices[0]);
+      if (summary.data.choices[0].finish_reason == "stop") {
+        res.send(summary.data.choices[0].message.content);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -115,10 +118,10 @@ app.get("/chat", (req, res) => {
   })(res);
 });
 
-app.post('/slack/events', (req, res) => {
+app.post("/slack/events", (req, res) => {
   const { type, challenge } = req.body;
 
-  if (type === 'url_verification') {
+  if (type === "url_verification") {
     // Respond to the URL verification challenge
     res.status(200).send({ challenge });
   } else {
