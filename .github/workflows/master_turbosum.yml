@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'TurboSum'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F860623E5AAB4AC0AB8DE5F72AE4F158 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4A20694DC43D4ECE853CD48FD96F616E }}
           package: .
