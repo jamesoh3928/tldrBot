@@ -159,17 +159,24 @@ const summarizeMain = async (channelId, dateTimeString, res, responseUrl) => {
     }
 
     // Send the POST request to the response URL
-    axios
-      .post(responseUrl, message, {
-        headers: { "Content-Type": "application/json" },
-      })
-      .then(() => {
-        console.log("Message sent successfully");
-      })
-      .catch((error) => {
-        console.log(`Failed to send message with error: ${error}`);
-      });
+    axios.post(responseUrl, message, {
+      headers: { "Content-Type": "application/json" },
+    }).then(() => {
+      console.log("Message sent successfully");
+    }).catch((error) => {
+      console.log(`Failed to send message with error: ${error}`);
+    });
   } catch (error) {
+    if (error?.data?.error === "not_in_channel") {
+      axios.post(responseUrl, { text: "I am not in this channel so cannot read the message. Please add me to the channel!" }, {
+        headers: { "Content-Type": "application/json" },
+      }).then(() => {
+        console.log("Error message sent successfully");
+      }).catch((error) => {
+        console.log(`Failed to send error message with error: ${error}`);
+      });
+    }
+
     console.error(error);
   }
 };
