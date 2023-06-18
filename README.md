@@ -1,4 +1,5 @@
-#**tldrBot**#
+# **tldrBot**
+![Alt text](tldrBot.jpg)
 
 ## Inspiration: 
 TLDR(too long; didn't read), has this ever happened to you? Thousands of unread messages flood our Slack inboxes, obscuring crucial insights and drowning us in a sea of digital noise. As hackers, we yearn to absorb every ounce of shared knowledge, but the sheer volume of unread messages proves overwhelming. Even our dedicated organizers, whom we deeply appreciate, find themselves tirelessly answering repetitive questions, buried under an avalanche of new threads.
@@ -12,6 +13,8 @@ Our groundbreaking solution transcends the boundaries of traditional automation,
 
 tldrBot is an ingenious Slackbot that revolutionizes the way you catch up on past messages within a channel. Say goodbye to information overload and hello to streamlined productivity. By harnessing the power of tldrBot, you'll effortlessly review vital, high-level information, unlocking precious time for other critical tasks.
 
+![Alt text](ask-directors.jpg)
+![Alt text](random.jpg)
 Here's the magic: in the desired Slack channel, a simple command is all it takes. Just type /summary [date in the format MM/dd/YYYY HH:mm:ss], and witness the instant transformation. tldrBot springs into action, swiftly generating a concise summary of all channel messages after the specified date. It's like having your very own personal assistant, distilling the essence of conversations into bite-sized nuggets of knowledge. A demo video can be found in the below section.
 
 ## How we built it
