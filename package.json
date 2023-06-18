@@ -5,7 +5,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"no test for MVP\""
+    "test": "echo \"no test for MVP\"",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
