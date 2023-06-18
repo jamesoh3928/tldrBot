@@ -65,7 +65,7 @@ const summarizeMessages = async (messages) => {
   // Call gpt-3.5-turbo model to summarize messages
   const summary = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    messages: [{ role: "user", content: generatePromptTest(req) }],
+    messages: [{ role: "user", content: prompt }],
     temperature: 0.2,
   });
   return summary;
