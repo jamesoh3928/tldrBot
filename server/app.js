@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
-import express from 'express';
-import summarize from './summarize.js';
+import dotenv from "dotenv";
+import express from "express";
+import summarize from "./summarize.js";
 import { WebClient } from "@slack/web-api";
 
 // Set up server
@@ -49,7 +49,7 @@ app.get("/summary", (req, res) => {
 
     try {
       // Get date
-      dateTimeString = "06/17/2023 16:00:00";
+      let dateTimeString = "06/17/2023 16:00:00";
       const dateTime = Math.floor(
         new Date(dateTimeString).getTime() / 1000
       ).toLocaleString();
@@ -59,7 +59,6 @@ app.get("/summary", (req, res) => {
         channel: channelId,
         oldest: dateTime,
       });
-
       conversationHistory = result.messages;
 
       conversationHistory.sort(
@@ -71,8 +70,30 @@ app.get("/summary", (req, res) => {
         conversationHistory.length + " messages found in " + channelId
       );
 
+      // let inputArray = [];
+      let inputString = '"';
+
+      for (let i = 0; i < conversationHistory.length; i++) {
+        let userId = conversationHistory[i].user;
+        let text = conversationHistory[i].text;
+
+        // Get user name
+        const result = await client.users.info({
+          user: userId,
+        });
+
+        let userName =
+          result.user.profile.first_name + " " + result.user.profile.last_name;
+
+        inputString += userName + ": " + text;
+        if (i < conversationHistory.length) {
+          inputString += ", ";
+        }
+      }
+      inputString += '"';
+
       // Send result
-      res.send(JSON.stringify(conversationHistory));
+      res.send(inputString);
     } catch (error) {
       console.error(error);
     }
