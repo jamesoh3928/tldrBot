@@ -106,16 +106,28 @@ const formatInputString = async (conversationHistory) => {
   return inputString;
 };
 
-const summarizeMain = async () => {
+const summarizeMain = async (channelName, dateTime) => {
   let conversationHistory; // Store conversation history
-  let channelId = "C05C9FUH8M7"; // ID of channel you watch to fetch the history for random
 
   try {
+    // Get channel ID
+    const channelsInfoResponse = await client.conversations.list();
+    if (!channelsInfoResponse.ok) {
+      console.error(channelsInfoResponse.error);
+      throw new Error("Failed to fetch channels info");
+    }
+    console.log("Channels info fetched successfully");
+    
+    // Extract channel ID with channel name using functional programming
+    const channelId = channelsInfo.channels.find((c) => c.name === channelName);
+    console.log(channelId);
+
+    // TODO: delete legacy code
     // Get date
-    let dateTimeString = "06/17/2023 16:00:00";
-    const dateTime = Math.floor(
-      new Date(dateTimeString).getTime() / 1000
-    ).toLocaleString();
+    // let dateTimeString = "06/17/2023 16:00:00";
+    // const dateTime = Math.floor(
+    //   new Date(dateTimeString).getTime() / 1000
+    // ).toLocaleString();
 
     // Call the conversations.history method using WebClient
     const result = await client.conversations.history({

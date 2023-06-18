@@ -42,23 +42,25 @@ app.post("/slack/events", (req, res) => {
     return;
   }
 
-  console.log("body " + req.body);
-  console.log("body stringify" + JSON.stringify(req.body));
-  const { text } = request.body;
-  console.log("text " + text);
+  // Example req.body looks like this
+  // { "token": "-", "team_id": "-", "team_domain": "ucberkeleyaihackathon", "channel_id": "C05CUEZJ05C", "channel_name": "mpdm-jo9347--junhee20park--jo8842-1", "user_id": "-", "user_name": "-", "command": "/summary", "text": "timeStamp", "api_app_id": "-", "is_enterprise_install": "false", "response_url": "-", "trigger_id": "-" }
   // Split text with space
-  const textArray = text.split(" ");
-  if (textArray.length !== 2) {
+  const { command, text, channelName } = req.body;
+  // Validate the command
+  if (command !== "/summary") {
     console.log("Invalid input");
-    res.send("Invalid input, there should be exactcly two commands, [channel] [timestamp]");
+    res.send("Command not found. Please use /summary <channel_name> <timestamp>");
   }
-  const channel = textArray[0];
-  const timestamp = textArray[1];
-  console.log("channel " + channel);
-  console.log("timestamp " + timestamp);
-  // TODO: get channel id with channel name
-  // TODO: conver timestamp to epoch time
-  // TODO: get conversation history with channel id and timestamp
+  
+  // Convert timstamp string to epoch time
+  // Input of format of "06/17/2023 16:00:00"
+  const dateTimeString = text.split(" ");
+  const dateTime = Math.floor(
+    new Date(dateTimeString).getTime() / 1000
+  ).toLocaleString();
+
+  console.log("channelName: " + channelName);
+  console.log("datetime: " + dateTime);
 
   // Handle other event types
   console.log("Start summarizing...");
